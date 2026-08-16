@@ -8,10 +8,13 @@ import { LoginUseCase } from './application/use-cases/login.use-case';
 import { AuthController } from './presentation/controllers/auth.controller';
 import { AuthJwtService } from './infrastructure/services/jwt.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { JwtStrategy } from './infrastructure/strategies/jwt.strategy';
+import { PassportModule } from '@nestjs/passport';
 
 @Module({
   imports: [
     ConfigModule,
+    PassportModule,
     JwtModule.registerAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
@@ -26,6 +29,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
   providers: [
     LoginUseCase,
     AuthJwtService,
+    JwtStrategy,
     {
       provide: UserRepository,
       useClass: PrismaUserRepository,
