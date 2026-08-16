@@ -21,6 +21,8 @@ model User {
   role        Role        @default(USER)
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
+
+  bookings Booking[]
 }
 
 model Hotel {
@@ -45,8 +47,28 @@ model Room {
   hotel     Hotel @relation(fields: [hotelId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  
+  bookings Booking[]
 
   @@unique([hotelId, number])
+}
+
+model Booking {
+  id        Int           @id @default(autoincrement())
+  checkIn  DateTime
+  checkOut DateTime
+  status   BookingStatus @default(PENDING)
+
+  userId Int
+  roomId Int
+
+  user User @relation(fields: [userId], references: [id])
+  room Room @relation(fields: [roomId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([roomId, checkIn, checkOut])
 }
 
 enum Role {
@@ -58,4 +80,10 @@ enum RoomType {
   SINGLE
   DOUBLE
   SUITE
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
 }
