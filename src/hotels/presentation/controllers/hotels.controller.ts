@@ -20,6 +20,7 @@ import { RolesGuard } from '../../../auth/presentation/guards/roles.guard';
 import { UpdateHotelDto } from '../../application/dto/update-hotel.dto';
 import { UserRole } from '../../../users/domain/entities/user.entity';
 import { CreateHotelDto } from '../../application/dto/create-hotel.dto';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('hotels')
 export class HotelsController {
@@ -42,6 +43,7 @@ export class HotelsController {
   }
 
   @Post()
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   create(@Body() dto: CreateHotelDto) {
@@ -49,6 +51,7 @@ export class HotelsController {
   }
 
   @Patch(':id')
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateHotelDto) {
@@ -56,6 +59,7 @@ export class HotelsController {
   }
 
   @Delete(':id')
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   remove(@Param('id', ParseIntPipe) id: number) {

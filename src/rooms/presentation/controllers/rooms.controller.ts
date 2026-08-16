@@ -22,6 +22,7 @@ import { CreateRoomDto } from '../../application/dto/create-room.dto';
 import { UpdateRoomDto } from '../../application/dto/update-room.dto';
 import { FindAvailableRoomsUseCase } from '../../application/use-cases/find-available-rooms.use-case';
 import { FindAvailableRoomsDto } from '../../application/dto/find-available-rooms.dto';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('rooms')
 export class RoomsController {
@@ -39,6 +40,7 @@ export class RoomsController {
   }
 
   @Post()
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   create(@Body() dto: CreateRoomDto) {
@@ -46,6 +48,7 @@ export class RoomsController {
   }
 
   @Patch(':id')
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateRoomDto) {
@@ -53,6 +56,7 @@ export class RoomsController {
   }
 
   @Delete(':id')
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   remove(@Param('id', ParseIntPipe) id: number) {
