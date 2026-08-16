@@ -30,9 +30,32 @@ model Hotel {
   description String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  rooms Room[]
+}
+
+model Room {
+  id        Int      @id @default(autoincrement())
+  number    String
+  type      RoomType
+  price     Decimal  @db.Decimal(10, 2)
+  capacity  Int
+  hotelId   Int
+
+  hotel     Hotel @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([hotelId, number])
 }
 
 enum Role {
   USER
   ADMIN
+}
+
+enum RoomType {
+  SINGLE
+  DOUBLE
+  SUITE
 }
