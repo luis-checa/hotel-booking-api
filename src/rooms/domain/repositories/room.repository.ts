@@ -6,4 +6,9 @@ export abstract class RoomRepository {
   abstract findByHotelId(hotelId: number): Promise<Room[]>;
   abstract update(room: Room): Promise<Room>;
   abstract delete(id: number): Promise<void>;
+  abstract findAvailable(
+    hotelId: number,
+    checkIn: Date,
+    checkOut: Date,
+  ): Promise<Room[]>;
 }
