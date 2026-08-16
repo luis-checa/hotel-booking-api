@@ -5,6 +5,7 @@ import { FindMyBookingsUseCase } from './application/use-cases/find-my-bookings.
 import { CancelBookingUseCase } from './application/use-cases/cancel-booking.use-case';
 import { BookingRepository } from './domain/repositories/booking.repository';
 import { PrismaBookingRepository } from './infrastructure/repositories/prisma-booking.repository';
+import { ConfirmBookingUseCase } from './application/use-cases/confirm-booking.use-case';
 
 @Module({
   controllers: [BookingsController],
@@ -12,6 +13,7 @@ import { PrismaBookingRepository } from './infrastructure/repositories/prisma-bo
     CreateBookingUseCase,
     FindMyBookingsUseCase,
     CancelBookingUseCase,
+    ConfirmBookingUseCase,
     {
       provide: BookingRepository,
       useClass: PrismaBookingRepository,

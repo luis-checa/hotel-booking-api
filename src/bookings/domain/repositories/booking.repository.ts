@@ -5,13 +5,14 @@ export abstract class BookingRepository {
 
   abstract findByUserId(userId: number): Promise<Booking[]>;
 
-  abstract findById(id: number): Promise<Booking | null>;
-
   abstract existsOverlappingBooking(
     roomId: number,
     checkIn: Date,
     checkOut: Date,
+    excludeBookingId?: number,
   ): Promise<boolean>;
 
   abstract update(booking: Booking): Promise<Booking>;
+
+  abstract findById(id: number): Promise<Booking | null>;
 }
