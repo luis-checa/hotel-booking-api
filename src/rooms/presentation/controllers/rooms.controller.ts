@@ -7,6 +7,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { CreateRoomUseCase } from '../../application/use-cases/create-room.use-case';
@@ -19,12 +20,15 @@ import { UserRole } from '../../../users/domain/entities/user.entity';
 import { Roles } from '../../../auth/presentation/decorators/roles.decorator';
 import { CreateRoomDto } from '../../application/dto/create-room.dto';
 import { UpdateRoomDto } from '../../application/dto/update-room.dto';
+import { FindAvailableRoomsUseCase } from '../../application/use-cases/find-available-rooms.use-case';
+import { FindAvailableRoomsDto } from '../../application/dto/find-available-rooms.dto';
 
 @Controller('rooms')
 export class RoomsController {
   constructor(
     private readonly createRoom: CreateRoomUseCase,
     private readonly findRoomsByHotel: FindRoomsByHotelUseCase,
+    private readonly findAvailableRooms: FindAvailableRoomsUseCase,
     private readonly updateRoom: UpdateRoomUseCase,
     private readonly deleteRoom: DeleteRoomUseCase,
   ) {}
@@ -53,5 +57,10 @@ export class RoomsController {
   @Roles(UserRole.ADMIN)
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.deleteRoom.execute(id);
+  }
+
+  @Get('available')
+  findAvailable(@Query() dto: FindAvailableRoomsDto) {
+    return this.findAvailableRooms.execute(dto);
   }
 }

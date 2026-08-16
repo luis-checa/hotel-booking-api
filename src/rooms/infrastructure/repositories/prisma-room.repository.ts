@@ -70,4 +70,31 @@ export class PrismaRoomRepository implements RoomRepository {
       where: { id },
     });
   }
+
+  async findAvailable(
+    hotelId: number,
+    checkIn: Date,
+    checkOut: Date,
+  ): Promise<Room[]> {
+    const rooms = await this.prisma.room.findMany({
+      where: {
+        hotelId,
+        bookings: {
+          none: {
+            status: {
+              in: ['PENDING', 'CONFIRMED'],
+            },
+            checkIn: {
+              lt: checkOut,
+            },
+            checkOut: {
+              gt: checkIn,
+            },
+          },
+        },
+      },
+    });
+
+    return rooms.map((room) => this.toDomain(room));
+  }
 }

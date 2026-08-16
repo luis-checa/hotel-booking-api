@@ -6,6 +6,7 @@ import { UpdateRoomUseCase } from './application/use-cases/update-room.use-case'
 import { DeleteRoomUseCase } from './application/use-cases/delete-room.use-case';
 import { RoomRepository } from './domain/repositories/room.repository';
 import { PrismaRoomRepository } from './infrastructure/repositories/prisma-room.repository';
+import { FindAvailableRoomsUseCase } from './application/use-cases/find-available-rooms.use-case';
 
 @Module({
   controllers: [RoomsController],
@@ -14,6 +15,7 @@ import { PrismaRoomRepository } from './infrastructure/repositories/prisma-room.
     FindRoomsByHotelUseCase,
     UpdateRoomUseCase,
     DeleteRoomUseCase,
+    FindAvailableRoomsUseCase,
     {
       provide: RoomRepository,
       useClass: PrismaRoomRepository,
