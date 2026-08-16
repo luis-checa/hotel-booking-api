@@ -18,6 +18,7 @@ import { Roles } from '../../../auth/presentation/decorators/roles.decorator';
 import { UserRole } from '../../../users/domain/entities/user.entity';
 import { RolesGuard } from '../../../auth/presentation/guards/roles.guard';
 import { ConfirmBookingUseCase } from '../../application/use-cases/confirm-booking.use-case';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('bookings')
 export class BookingsController {
@@ -29,6 +30,7 @@ export class BookingsController {
   ) {}
 
   @Post()
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   create(
     @Body() dto: CreateBookingDto,
@@ -38,12 +40,14 @@ export class BookingsController {
   }
 
   @Get('me')
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   findMine(@Req() request: Request & { user: { id: number } }) {
     return this.findMyBookings.execute(request.user.id);
   }
 
   @Patch(':id/cancel')
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   cancel(
     @Param('id', ParseIntPipe) id: number,
@@ -53,6 +57,7 @@ export class BookingsController {
   }
 
   @Patch(':id/confirm')
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   confirm(@Param('id', ParseIntPipe) id: number) {

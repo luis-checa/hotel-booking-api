@@ -6,6 +6,7 @@ import { Roles } from '../../../auth/presentation/decorators/roles.decorator';
 import { UserRole } from '../../domain/entities/user.entity';
 import { RolesGuard } from '../../../auth/presentation/guards/roles.guard';
 import { JwtAuthGuard } from '../../../auth/presentation/guards/jwt-auth.guard';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('users')
 export class UsersController {
@@ -17,6 +18,7 @@ export class UsersController {
   }
 
   @Get('admin-test')
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   adminTest() {
