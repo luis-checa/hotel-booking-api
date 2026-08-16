@@ -14,6 +14,10 @@ import { CreateBookingUseCase } from '../../application/use-cases/create-booking
 import { FindMyBookingsUseCase } from '../../application/use-cases/find-my-bookings.use-case';
 import { CancelBookingUseCase } from '../../application/use-cases/cancel-booking.use-case';
 import { CreateBookingDto } from '../../application/dto/create-booking.dto';
+import { Roles } from '../../../auth/presentation/decorators/roles.decorator';
+import { UserRole } from '../../../users/domain/entities/user.entity';
+import { RolesGuard } from '../../../auth/presentation/guards/roles.guard';
+import { ConfirmBookingUseCase } from '../../application/use-cases/confirm-booking.use-case';
 
 @Controller('bookings')
 export class BookingsController {
@@ -21,6 +25,7 @@ export class BookingsController {
     private readonly createBooking: CreateBookingUseCase,
     private readonly findMyBookings: FindMyBookingsUseCase,
     private readonly cancelBooking: CancelBookingUseCase,
+    private readonly confirmBooking: ConfirmBookingUseCase,
   ) {}
 
   @Post()
@@ -45,5 +50,12 @@ export class BookingsController {
     @Req() request: Request & { user: { id: number } },
   ) {
     return this.cancelBooking.execute(id, request.user.id);
+  }
+
+  @Patch(':id/confirm')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  confirm(@Param('id', ParseIntPipe) id: number) {
+    return this.confirmBooking.execute(id);
   }
 }

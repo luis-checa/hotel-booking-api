@@ -53,4 +53,12 @@ export class Booking {
 
     this.props.status = BookingStatus.CANCELLED;
   }
+
+  confirm() {
+    if (this.props.status === BookingStatus.CANCELLED) {
+      throw new Error('Cancelled booking cannot be confirmed');
+    }
+
+    this.props.status = BookingStatus.CONFIRMED;
+  }
 }

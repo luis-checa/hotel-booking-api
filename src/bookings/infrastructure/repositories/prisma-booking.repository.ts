@@ -55,10 +55,12 @@ export class PrismaBookingRepository implements BookingRepository {
     roomId: number,
     checkIn: Date,
     checkOut: Date,
+    excludeBookingId?: number,
   ): Promise<boolean> {
     const booking = await this.prisma.booking.findFirst({
       where: {
         roomId,
+        id: excludeBookingId ? { not: excludeBookingId } : undefined,
         status: {
           in: ['PENDING', 'CONFIRMED'],
         },
