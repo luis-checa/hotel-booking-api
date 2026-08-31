@@ -1,6 +1,7 @@
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import request from 'supertest';
+import { seedE2E, closeSeed } from './seed-e2e';
 
 import { AppModule } from '../src/app.module';
 
@@ -10,17 +11,27 @@ describe('Booking flow (e2e)', () => {
   let roomId: number;
 
   beforeAll(async () => {
+    await seedE2E();
+
     const moduleRef = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
 
     app = moduleRef.createNestApplication();
+    app.useGlobalPipes(
+      new ValidationPipe({
+        whitelist: true,
+        forbidNonWhitelisted: true,
+        transform: true,
+      }),
+    );
 
     await app.init();
   });
 
   afterAll(async () => {
     await app.close();
+    await closeSeed();
   });
 
   it('should login and obtain JWT', async () => {
@@ -48,8 +59,9 @@ describe('Booking flow (e2e)', () => {
       .expect(200);
 
     expect(Array.isArray(response.body)).toBe(true);
+    expect(response.body.length).toBeGreaterThan(0);
 
-    roomId = response.body[0].id;
+    roomId = response.body[0].props.id;
   });
 
   it('should create a booking', async () => {
@@ -63,7 +75,7 @@ describe('Booking flow (e2e)', () => {
       })
       .expect(201);
 
-    expect(response.body.id).toBeDefined();
+    expect(response.body.props.id).toBeDefined();
   });
 
   it('should get my bookings', async () => {
