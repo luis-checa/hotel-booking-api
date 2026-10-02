@@ -10,9 +10,9 @@ export class CreateHotelUseCase {
   async execute(dto: CreateHotelDto) {
     const hotel = Hotel.create({
       id: 0,
-      name: dto.name,
-      address: dto.address,
-      description: dto.description,
+      name: dto.name.trim(),
+      address: dto.address.trim(),
+      description: dto.description?.trim(),
       createdAt: new Date(),
       updatedAt: new Date(),
     });

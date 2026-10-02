@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Booking } from '../../domain/entities/booking.entity';
+import { Booking, BookingStatus } from '../../domain/entities/booking.entity';
 import { PrismaService } from '../../../shared/infrastructure/prisma/prisma.service';
 import { BookingRepository } from '../../domain/repositories/booking.repository';
 
@@ -12,7 +12,7 @@ export class PrismaBookingRepository implements BookingRepository {
       id: booking.id,
       checkIn: booking.checkIn,
       checkOut: booking.checkOut,
-      status: booking.status,
+      status: booking.status as BookingStatus,
       userId: booking.userId,
       roomId: booking.roomId,
       createdAt: booking.createdAt,

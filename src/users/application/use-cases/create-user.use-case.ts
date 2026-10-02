@@ -10,7 +10,9 @@ export class CreateUserUseCase {
   constructor(private readonly userRepository: UserRepository) {}
 
   async execute(dto: CreateUserDto) {
-    const existingUser = await this.userRepository.findByEmail(dto.email);
+    const email = dto.email.trim().toLowerCase();
+
+    const existingUser = await this.userRepository.findByEmail(email);
 
     if (existingUser) {
       throw new ConflictException('Email already registered');
@@ -21,7 +23,7 @@ export class CreateUserUseCase {
     const user = User.create({
       id: 0,
       name: dto.name,
-      email: dto.email,
+      email,
       password,
       role: UserRole.USER,
       createdAt: new Date(),

@@ -1,98 +1,418 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Hotel Booking API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+API REST para la gestión de hoteles, habitaciones, usuarios y reservas.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Tecnologías
 
-## Description
+- NestJS 11
+- TypeScript
+- PostgreSQL 15
+- Prisma ORM
+- JWT / Passport
+- bcrypt
+- Docker
+- Swagger / OpenAPI
+- class-validator
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Arquitectura
 
-## Project setup
+El proyecto utiliza **Clean Architecture**, organizado por módulos:
 
-```bash
-$ npm install
+```
+src/
+├── auth/
+├── users/
+├── hotels/
+├── rooms/
+├── bookings/
+└── shared/
 ```
 
-## Compile and run the project
+Cada módulo se divide principalmente en:
 
-```bash
-# development
-$ npm run start
+- `domain/` → entidades y contratos de repositorios.
+- `application/` → casos de uso y DTOs.
+- `infrastructure/` → persistencia y servicios externos.
+- `presentation/` → controllers, guards y decorators.
 
-# watch mode
-$ npm run start:dev
+Los casos de uso dependen de abstracciones de repositorios y no directamente de Prisma.
 
-# production mode
-$ npm run start:prod
+## Modelo de datos
+
+```
+User
+ └── Booking
+
+Hotel
+ └── Room
+      └── Booking
 ```
 
-## Run tests
+- Un usuario puede tener múltiples reservas.
+- Un hotel puede tener múltiples habitaciones.
+- Una habitación pertenece a un único hotel.
+- Una reserva pertenece a un usuario y a una habitación.
 
-```bash
-# unit tests
-$ npm run test
+## Funcionalidades
 
-# e2e tests
-$ npm run test:e2e
+La API permite:
 
-# test coverage
-$ npm run test:cov
+- Registrar usuarios.
+- Autenticar usuarios mediante JWT.
+- Gestionar hoteles.
+- Gestionar habitaciones.
+- Consultar habitaciones disponibles.
+- Crear reservas.
+- Consultar las reservas del usuario autenticado.
+- Cancelar reservas propias.
+- Confirmar reservas como administrador.
+- Controlar acceso mediante los roles `USER` y `ADMIN`.
+
+## Requisitos
+
+Antes de iniciar el proyecto necesitas tener instalado:
+
+- Node.js
+- npm
+- Docker
+- Docker Compose
+
+## Instalación y desarrollo
+
+### 1\. Instalar dependencias
+
+```
+npm install
 ```
 
-## Deployment
+### 2\. Configurar variables de entorno
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+Crear un archivo `.env` en la raíz del proyecto:
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+```
+DATABASE_URL="postgresql://postgres:123456@localhost:5432/hotel_booking"
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+JWT_SECRET="super-secret-key-change-me"
+
+PORT=3000
+
+POSTGRES_DB=hotel_booking
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=123456
+POSTGRES_PORT=5432
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### 3\. Levantar PostgreSQL
 
-## Resources
+```
+docker compose up -d
+```
 
-Check out a few resources that may come in handy when working with NestJS:
+Esto inicia PostgreSQL mediante Docker Compose.
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+### 4\. Generar el cliente de Prisma
 
-## Support
+```
+npm run prisma:generate
+```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### 5\. Ejecutar las migraciones
 
-## Stay in touch
+```
+npm run prisma:migrate
+```
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+Este comando crea y actualiza las tablas de la base de datos según `prisma/schema.prisma`.
 
-## License
+### 6\. Ejecutar el seed
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+```
+npm run seed
+```
+
+El seed crea datos iniciales para usuarios, hoteles, habitaciones y reservas.
+
+Credenciales creadas por el seed:
+
+```
+Admin
+email: admin@hotel.com
+password: Admin1234
+
+User
+email: user@hotel.com
+password: User1234
+```
+
+### 7\. Iniciar la API
+
+```
+npm run start:dev
+```
+
+La API estará disponible en:
+
+```
+http://localhost:3000/api
+```
+
+La documentación Swagger estará disponible en:
+
+```
+http://localhost:3000/docs
+```
+
+## Autenticación
+
+Los endpoints protegidos utilizan JWT mediante el header:
+
+```
+Authorization: Bearer <JWT>
+```
+
+Existen dos roles:
+
+```
+USER
+ADMIN
+```
+
+Los endpoints administrativos requieren autenticación y el rol `ADMIN`.
+
+Los endpoints relacionados con las reservas requieren autenticación según la operación.
+
+## Endpoints
+
+La API utiliza `/api` como prefijo global.
+
+### Users
+
+| Método | Endpoint     | Acceso  |
+| ------ | ------------ | ------- |
+| POST   | `/api/users` | Público |
+
+Registra un nuevo usuario.
+
+### Auth
+
+| Método | Endpoint          | Acceso  |
+| ------ | ----------------- | ------- |
+| POST   | `/api/auth/login` | Público |
+
+Autentica un usuario y devuelve un JWT.
+
+### Hotels
+
+| Método | Endpoint          | Acceso  |
+| ------ | ----------------- | ------- |
+| GET    | `/api/hotels`     | Público |
+| GET    | `/api/hotels/:id` | Público |
+| POST   | `/api/hotels`     | ADMIN   |
+| PATCH  | `/api/hotels/:id` | ADMIN   |
+| DELETE | `/api/hotels/:id` | ADMIN   |
+
+Permite consultar y administrar hoteles.
+
+### Rooms
+
+| Método | Endpoint                    | Acceso  |
+| ------ | --------------------------- | ------- |
+| GET    | `/api/rooms/hotel/:hotelId` | Público |
+| GET    | `/api/rooms/available`      | Público |
+| POST   | `/api/rooms`                | ADMIN   |
+| PATCH  | `/api/rooms/:id`            | ADMIN   |
+| DELETE | `/api/rooms/:id`            | ADMIN   |
+
+Consulta de habitaciones disponibles:
+
+```
+GET /api/rooms/available?hotelId=1&checkIn=2026-10-10T14:00:00Z&checkOut=2026-10-15T11:00:00Z
+```
+
+### Bookings
+
+| Método | Endpoint                    | Acceso      |
+| ------ | --------------------------- | ----------- |
+| POST   | `/api/bookings`             | Autenticado |
+| GET    | `/api/bookings/me`          | Autenticado |
+| PATCH  | `/api/bookings/:id/cancel`  | Propietario |
+| PATCH  | `/api/bookings/:id/confirm` | ADMIN       |
+
+## Lógica de negocio
+
+### Creación de reservas
+
+Al crear una reserva se validan las siguientes condiciones:
+
+1. `checkIn` debe ser anterior a `checkOut`.
+2. `checkIn` no puede estar en el pasado.
+3. La habitación debe existir.
+4. La habitación no puede tener otra reserva `PENDING` o `CONFIRMED` que se solape con las fechas solicitadas.
+5. Una nueva reserva se crea inicialmente con estado `PENDING`.
+
+### Estados de una reserva
+
+```
+PENDING
+CONFIRMED
+CANCELLED
+```
+
+Una reserva puede pasar de `PENDING` a `CONFIRMED` mediante un administrador.
+
+Una reserva puede ser cancelada por su propietario.
+
+Las reservas canceladas no pueden volver a confirmarse.
+
+Antes de confirmar una reserva, el sistema verifica que la habitación continúe disponible para las fechas solicitadas.
+
+## Roles y permisos
+
+### USER
+
+Un usuario autenticado puede:
+
+- Crear reservas.
+- Consultar sus propias reservas.
+- Cancelar sus propias reservas.
+
+No puede:
+
+- Crear, modificar o eliminar hoteles.
+- Crear, modificar o eliminar habitaciones.
+- Confirmar reservas.
+- Cancelar reservas pertenecientes a otros usuarios.
+
+### ADMIN
+
+Un administrador puede:
+
+- Gestionar hoteles.
+- Gestionar habitaciones.
+- Confirmar reservas.
+- Realizar las operaciones permitidas por los endpoints administrativos.
+
+## Validaciones
+
+La API utiliza un `ValidationPipe` global con:
+
+```
+{
+  whitelist: true,
+  forbidNonWhitelisted: true,
+  transform: true
+}
+```
+
+Los parámetros numéricos de las rutas se validan mediante `ParseIntPipe`.
+
+Las fechas y datos enviados en las peticiones son validados mediante DTOs y `class-validator`.
+
+## Manejo de errores
+
+Los errores HTTP son gestionados mediante un filtro global.
+
+Las respuestas de error utilizan una estructura como:
+
+```
+{
+  "success": false,
+  "statusCode": 404,
+  "message": "Hotel not found",
+  "path": "/api/hotels/10",
+  "timestamp": "2026-10-01T00:00:00.000Z"
+}
+```
+
+## Prisma
+
+El esquema de la base de datos se encuentra en:
+
+```
+prisma/schema.prisma
+```
+
+Las migraciones se encuentran en:
+
+```
+prisma/migrations/
+```
+
+El seed se encuentra en:
+
+```
+prisma/seed.ts
+```
+
+El cliente de Prisma se genera mediante:
+
+```
+npm run prisma:generate
+```
+
+## Comandos principales
+
+Instalar dependencias:
+
+```
+npm install
+```
+
+Levantar PostgreSQL:
+
+```
+docker compose up -d
+```
+
+Generar Prisma Client:
+
+```
+npm run prisma:generate
+```
+
+Crear/aplicar migraciones en desarrollo:
+
+```
+npm run prisma:migrate
+```
+
+Ejecutar datos iniciales:
+
+```
+npm run seed
+```
+
+Iniciar la aplicación en desarrollo:
+
+```
+npm run start:dev
+```
+
+Detener PostgreSQL:
+
+```
+docker compose down
+```
+
+## Flujo completo desde cero
+
+Para levantar el proyecto por primera vez:
+
+```
+npm install
+docker compose up -d
+npm run prisma:generate
+npm run prisma:migrate
+npm run seed
+npm run start:dev
+```
+
+Después de iniciar la API:
+
+```
+API:
+http://localhost:3000/api
+
+Swagger:
+http://localhost:3000/docs
+```

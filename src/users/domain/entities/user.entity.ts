@@ -47,4 +47,15 @@ export class User {
   get updatedAt(): Date {
     return this.props.updatedAt;
   }
+
+  toJSON() {
+    return {
+      id: this.props.id,
+      name: this.props.name,
+      email: this.props.email,
+      role: this.props.role,
+      createdAt: this.props.createdAt,
+      updatedAt: this.props.updatedAt,
+    };
+  }
 }
