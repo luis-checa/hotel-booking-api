@@ -1,13 +1,9 @@
-import { PrismaPg } from '@prisma/adapter-pg';
-import { PrismaClient, Role } from '../src/generated/prisma/client';
+import { PrismaService } from '../src/shared/infrastructure/prisma/prisma.service';
+import { UserRole } from '../src/users/domain/entities/user.entity';
 import * as bcrypt from 'bcrypt';
 import 'dotenv/config';
 
-const adapter = new PrismaPg({
-  connectionString: process.env.DATABASE_URL!,
-});
-
-const prisma = new PrismaClient({ adapter });
+const prisma = new PrismaService();
 
 async function main() {
   const email = process.env.ADMIN_EMAIL;
@@ -22,13 +18,13 @@ async function main() {
   await prisma.user.upsert({
     where: { email },
     update: {
-      role: Role.ADMIN,
+      role: UserRole.ADMIN,
     },
     create: {
       name: 'Administrator',
       email,
       password: hashedPassword,
-      role: Role.ADMIN,
+      role: UserRole.ADMIN,
     },
   });
 
@@ -37,7 +33,9 @@ async function main() {
 
 main()
   .catch((error) => {
-    console.error(error);
+    console.error('Admin seed failed:', error);
     process.exit(1);
   })
-  .finally(() => prisma.$disconnect());
+  .finally(async () => {
+    await prisma.$disconnect();
+  });
