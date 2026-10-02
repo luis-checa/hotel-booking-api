@@ -1,9 +1,13 @@
-import { PrismaService } from '../src/shared/infrastructure/prisma/prisma.service';
-import { UserRole } from '../src/users/domain/entities/user.entity';
-import * as bcrypt from 'bcrypt';
 import 'dotenv/config';
+import { PrismaPg } from '@prisma/adapter-pg';
+import { PrismaClient } from '../src/generated/prisma/client';
+import * as bcrypt from 'bcrypt';
 
-const prisma = new PrismaService();
+const adapter = new PrismaPg({
+  connectionString: process.env.DATABASE_URL!,
+});
+
+const prisma = new PrismaClient({ adapter });
 
 async function main() {
   const email = process.env.ADMIN_EMAIL;
@@ -18,13 +22,14 @@ async function main() {
   await prisma.user.upsert({
     where: { email },
     update: {
-      role: UserRole.ADMIN,
+      role: 'ADMIN',
+      password: hashedPassword,
     },
     create: {
       name: 'Administrator',
       email,
       password: hashedPassword,
-      role: UserRole.ADMIN,
+      role: 'ADMIN',
     },
   });
 
