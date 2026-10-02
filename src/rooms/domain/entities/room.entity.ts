@@ -57,4 +57,17 @@ export class Room {
   update(props: Partial<Omit<RoomProps, 'id' | 'hotelId' | 'createdAt'>>) {
     Object.assign(this.props, props);
   }
+
+  toJSON() {
+    return {
+      id: this.props.id,
+      number: this.props.number,
+      type: this.props.type,
+      price: this.props.price,
+      capacity: this.props.capacity,
+      hotelId: this.props.hotelId,
+      createdAt: this.props.createdAt,
+      updatedAt: this.props.updatedAt,
+    };
+  }
 }

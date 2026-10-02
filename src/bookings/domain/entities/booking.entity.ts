@@ -46,6 +46,14 @@ export class Booking {
     return this.props.roomId;
   }
 
+  get createdAt() {
+    return this.props.createdAt;
+  }
+
+  get updatedAt() {
+    return this.props.updatedAt;
+  }
+
   cancel() {
     if (this.props.status === BookingStatus.CANCELLED) {
       throw new Error('Booking is already cancelled');
@@ -59,6 +67,23 @@ export class Booking {
       throw new Error('Cancelled booking cannot be confirmed');
     }
 
+    if (this.props.status === BookingStatus.CONFIRMED) {
+      throw new Error('Booking is already confirmed');
+    }
+
     this.props.status = BookingStatus.CONFIRMED;
+  }
+
+  toJSON() {
+    return {
+      id: this.props.id,
+      checkIn: this.props.checkIn,
+      checkOut: this.props.checkOut,
+      status: this.props.status,
+      userId: this.props.userId,
+      roomId: this.props.roomId,
+      createdAt: this.props.createdAt,
+      updatedAt: this.props.updatedAt,
+    };
   }
 }

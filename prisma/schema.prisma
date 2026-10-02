@@ -4,10 +4,9 @@
 // Get a free hosted Postgres database in seconds: `npx create-db`
 
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
   moduleFormat = "cjs"
-  importFileExtension = "ts"
 }
 
 datasource db {
@@ -15,13 +14,13 @@ datasource db {
 }
 
 model User {
-  id          Int         @id @default(autoincrement())
-  name        String
-  email       String      @unique
-  password    String
-  role        Role        @default(USER)
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role     @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   bookings Booking[]
 }
@@ -38,24 +37,24 @@ model Hotel {
 }
 
 model Room {
-  id        Int      @id @default(autoincrement())
-  number    String
-  type      RoomType
-  price     Decimal  @db.Decimal(10, 2)
-  capacity  Int
-  hotelId   Int
+  id       Int      @id @default(autoincrement())
+  number   String
+  type     RoomType
+  price    Decimal  @db.Decimal(10, 2)
+  capacity Int
+  hotelId  Int
 
-  hotel     Hotel @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+  hotel     Hotel    @relation(fields: [hotelId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
+
   bookings Booking[]
 
   @@unique([hotelId, number])
 }
 
 model Booking {
-  id        Int           @id @default(autoincrement())
+  id       Int           @id @default(autoincrement())
   checkIn  DateTime
   checkOut DateTime
   status   BookingStatus @default(PENDING)

@@ -34,6 +34,11 @@ export class RoomsController {
     private readonly deleteRoom: DeleteRoomUseCase,
   ) {}
 
+  @Get('available')
+  findAvailable(@Query() dto: FindAvailableRoomsDto) {
+    return this.findAvailableRooms.execute(dto);
+  }
+
   @Get('hotel/:hotelId')
   findByHotel(@Param('hotelId', ParseIntPipe) hotelId: number) {
     return this.findRoomsByHotel.execute(hotelId);
@@ -61,10 +66,5 @@ export class RoomsController {
   @Roles(UserRole.ADMIN)
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.deleteRoom.execute(id);
-  }
-
-  @Get('available')
-  findAvailable(@Query() dto: FindAvailableRoomsDto) {
-    return this.findAvailableRooms.execute(dto);
   }
 }

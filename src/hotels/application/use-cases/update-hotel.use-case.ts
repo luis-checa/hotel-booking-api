@@ -13,7 +13,13 @@ export class UpdateHotelUseCase {
       throw new NotFoundException('Hotel not found');
     }
 
-    hotel.update(dto);
+    hotel.update({
+      ...(dto.name !== undefined && { name: dto.name.trim() }),
+      ...(dto.address !== undefined && { address: dto.address.trim() }),
+      ...(dto.description !== undefined && {
+        description: dto.description.trim(),
+      }),
+    });
 
     return this.repository.update(hotel);
   }

@@ -13,7 +13,12 @@ export class UpdateRoomUseCase {
       throw new NotFoundException('Room not found');
     }
 
-    room.update(dto);
+    room.update({
+      ...(dto.number !== undefined && { number: dto.number }),
+      ...(dto.type !== undefined && { type: dto.type }),
+      ...(dto.price !== undefined && { price: dto.price }),
+      ...(dto.capacity !== undefined && { capacity: dto.capacity }),
+    });
 
     return this.repository.update(room);
   }

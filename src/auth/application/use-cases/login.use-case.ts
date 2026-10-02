@@ -13,7 +13,9 @@ export class LoginUseCase {
   ) {}
 
   async execute(dto: LoginDto) {
-    const user = await this.userRepository.findByEmail(dto.email);
+    const email = dto.email.trim().toLowerCase();
+
+    const user = await this.userRepository.findByEmail(email);
 
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
